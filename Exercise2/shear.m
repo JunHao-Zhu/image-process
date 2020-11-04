@@ -16,17 +16,16 @@ mod_pos = [62, 139, 1; 133, 231, 1; 70, 46, 1; 119, 163, 1; 105, 28, 1; 61, 119,
 
 % W_x = inv((ori_pos'* ori_pos)) * ori_pos' * mod_pos_x; % 根据最小二乘法得到 x'=ax+by+c 的系数
 % W_y = inv((ori_pos'* ori_pos)) * ori_pos' * mod_pos_y; % 根据最小二乘法得到 y'=a'x+b'y+c' 的系数
-W_x = inv((mod_pos'* mod_pos)) * mod_pos' * pos_x; % 根据最小二乘法得到 x'=ax+by+c 的系数
-W_y = inv((mod_pos'* mod_pos)) * mod_pos' * pos_y; % 根据最小二乘法得到 y'=a'x+b'y+c' 的系数
+W_x = (mod_pos'* mod_pos) \ mod_pos' * pos_x; % 根据最小二乘法得到 x'=ax+by+c 的系数
+W_y = (mod_pos'* mod_pos) \ mod_pos' * pos_y; % 根据最小二乘法得到 y'=a'x+b'y+c' 的系数
 
-[hight_tar, wide_tar, nsc] = size(ori_img); % 斜着的图像的尺寸
-[hight, wide, nsc] = size(mod_img); % 正着的图像尺寸
+[hight_tar, wide_tar, ~] = size(ori_img); % 斜着的图像的尺寸
+[hight, wide, ~] = size(mod_img); % 正着的图像尺寸
 
 recover_img = uint8(ones(hight, wide, 3)*128); % 初始化恢复的图像矩阵
 
 % x_pos = [212, 23, 1] * W_x
 % y_pos = [212, 23, 1] * W_y
-
 
 for i = 1:wide
     for j = 1:hight
