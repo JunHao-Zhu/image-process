@@ -1,44 +1,33 @@
-function mod_img = resize(img, scale)
-    % 图像的放大或者缩小(长宽等比例)
-    % img: 输入的图像 scale_size: 比例系数
-    [x,y] = size(img);
-    reshape = floor([x, y] * scale);
-    mod_img = uint8(ones(reshape)*128);
-%     mod_img = zeros(reshape);
-    for i = 1:reshape(1)
-        for j = 1:reshape(2)
-            mod_img(i,j) = img(floor(i/scale+0.5), floor(j/scale+0.5));
+clc;
+% 导入图像
+img = imread('image1.jpeg');
+[hight, width, ~] = size(img);
+figure();
+imshow(img);title('原图');
+
+% 设置水平方向上的缩放比例以及垂直方向上的缩放比例
+scale_x = 1.5;
+scale_y = 1.5;
+scale_mat = [scale_x, 0, 0; 0, scale_y, 0; 0, 0, 1];
+
+% 获得缩放后图像的画布大小
+mod_h = floor(hight * scale_x) + 1;
+mod_w = floor(width * scale_y) + 1;
+
+new_img = zeros(mod_h, mod_w, 3);
+for i = 1 : mod_h
+    for j = 1 : mod_w
+        ori_pos = scale_mat \ [i; j; 1];
+        mod_x = floor(ori_pos(1,1));
+        mod_y = floor(ori_pos(2,1));
+        D_x = ori_pos(1,1) - mod_x;
+        D_y = ori_pos(2,1) - mod_y;
+        if(mod_x <= hight-1 && mod_y <= width-1 && mod_x >= 2 && mod_y >= 2)
+            new_img(i, j, :) = (1-D_x)*(1-D_y)*img(mod_x,mod_y,:) + D_x*(1-D_y)*img(mod_x+1,mod_y,:) +...
+                (1-D_x)*D_y*img(mod_x,mod_y+1,:) + D_x*D_y*img(mod_x+1,mod_y+1,:);
         end
     end
 end
-% [h,w] = size(img); %获取行和列，即原图的高度和宽度
-% 
-% scale_size = uint8([h, w] * scale);
-% scale_w = scale_size(2); %根据输入获得缩放后的新宽度
-% scale_h = scale_size(1); %根据输入获得缩放后的新高度
-% % mod_img = zeros(scale_h, scale_w); %初始化
-% mod_img = uint8(ones(scale_h, scale_w)*128);
-%  
-% for i = 1 : scale_h         %缩放后的图像的（i,j）位置对应原图的（x,y）
-%     for j = 1 : scale_w
-%         x = i * h / scale_h;
-%         y = j * w / scale_w;
-%         u = x - floor(x);
-%         v = y - floor(y); %取小数部分
-%         
-%         if x < 1           %边界处理
-%             x = 1;
-%         end
-%         
-%         if y < 1
-%             y = 1;
-%         end
-%         
-%  
-%         %用原图的四个真实像素点来双线性插值获得“虚”像素的像素值
-%         mod_img(i, j) = img(floor(x), floor(y)) * (1-u) * (1-v) + ...
-%                                img(floor(x), ceil(y)) * (1-u) * v + ...
-%                                img(ceil(x), floor(y)) * u * (1-v) + ...
-%                                img(ceil(x), ceil(y)) * u * v;
-%     end
-% end
+new_img = uint8(new_img);
+figure();
+imshow(new_img);title('缩放后图像');
