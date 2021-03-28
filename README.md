@@ -20,4 +20,4 @@
 
 包含了所有任务的Matlab GUI界面。界面整体情况如下：
 
-<img src='E:\image-process\ImgProcGUI\界面.png' alt='GUI'>
+<img src='https://github.com/JunHao-Zhu/image-process/blob/master/ImgProcGUI/%E7%95%8C%E9%9D%A2.PNG' alt='GUI'/>
